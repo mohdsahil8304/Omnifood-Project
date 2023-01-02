@@ -1,0 +1,43 @@
+<header class="header sticky ">
+  {{>navbar}}
+</header>
+{{>headerlinks}}
+<section class="section-cta" id="cta logIn">
+  <div class="container">
+    <div class="cta">
+      <div class="cta-text-box">
+        <h2 class="heading-secondary">Get your first meel for free!
+        </h2>
+        <p class="cta-text">
+          Healthy, tasty and hassle-free meals are waiting for you. Start eating
+          well today. You can cancel or pause anytime. And the first meal is on
+          us!
+        </p>
+        <form class="cta-form" action="/auth/logIn" method="post">
+          <!-- use for,placeholder,optipn,value & action -->
+          <div>
+            <label for="email">Email address </label>
+            <input name="email" id="email" value="" type="email" placeholder="me@example.com" required />
+          </div>
+          <div>
+            <label for="select-where">Password</label>
+            <input name="password" id="password" value="" type="password" placeholder="Enter your password" required />
+          </div>
+          {{!-- <button class="btn btn--form">Sign up now</button> --}}
+          <button type="submit" class="btn btn--form justify-content-center d-flex mx-auto" value="">Log In Now</button>
+          <!-- <input type="checkbox" />  <input type="number" /> -->
+
+          <a href="/forgetpassword" class="forget-link">Forget your password ?</a>
+        </form>
+      </div>
+      <!-- use in this aria-label & role attribute -->
+      <div class="cta-img-box" role="img" aria-label="Women enjoying food"></div>
+
+    </div>
+  </div>
+  {{#if message}}
+  <div class="mt-4">
+    <h4 class="alert alert-denger">{{message}}</h4>
+  </div>
+  {{/if}}
+</section>

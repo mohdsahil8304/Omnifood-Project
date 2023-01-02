@@ -1,0 +1,6 @@
+{
+  "sortLines.filterBlankLines": true,
+  "sortLines.sortEntireFile": true,
+  "files.autoSave": "onFocusChange",
+  "git.ignoreLimitWarning": true
+}
