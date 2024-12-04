@@ -1,13 +1,15 @@
-// const express = require("express");
-// const apiRouter = express.Router();
-// // const con = require("../src/app");
-// const bodyParser = require("body-parser");
-// // const nodemailer = require("nodemailer");
-// const authController = require("../controller/auth");
+const express = require("express");
+const apiRouter = express.Router();
+const con = require("../src/app");
+const bodyParser = require("body-parser");
+// const nodemailer = require("nodemailer");
+// const session = require("express-session");
+const cookie = require("cookie-parser");
+const authController = require("../controller/auth");
 
 // // const crypto = require("crypto");
 // // const async = require("hbs/lib/async");
-// const encoder = bodyParser.urlencoded();
+const encoder = bodyParser.urlencoded();
 
 // apiRouter.post("/forgetpassword", encoder, async (req, res, next) => {
 //   try {
@@ -227,4 +229,37 @@
 //     }
 //   }
 // );
-module.exports = apiRouter;
+// module.exports = apiRouter;
+const jwt = require("jsonwebtoken");
+// const bcrypt = require("bcryptjs");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./.env" });
+
+const auth = async (req, res, next) => {
+  const token = req.cookies.token;
+  console.log(token);
+  console.log(process.env.SECRET_KEY);
+  try {
+    if (token) {
+      jwt.verify(token, process.env.SECRET_KEY);
+      res.clearCookie("jwt");
+      // res.status(201).send("user authenticate succesfully");
+      console.log("user authenticate succesfully");
+      next();
+    } else {
+      res.status(200).send({
+        success: false,
+        message: "A token is required for authentication",
+      });
+      console.log("A token is required for authentication");
+    }
+  } catch {
+    res.status(401).render("404", {
+      Errormsg: "You Are Not Valid User Go Back",
+    });
+    console.log("You Are Not Valid User Go Back");
+  }
+};
+
+module.exports = auth;

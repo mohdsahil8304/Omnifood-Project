@@ -1,15 +1,16 @@
 const express = require("express");
 const app = express();
 const path = require("path");
-const dotenv = require("dotenv");
 const hbs = require("hbs");
+const dotenv = require("dotenv");
+const cookie = require("cookie-parser");
 const port = process.env.PORT || 7000;
 const mysql = require("mysql2");
 
 const session = require("express-session");
 // const apiRouter = require("../routes/apiRouter");
 const cors = require("cors");
-
+app.use(cookie());
 // const dotenv = require("dotenv").config();
 
 dotenv.config({ path: "./.env" });
@@ -30,11 +31,15 @@ con.connect((err) => {
   }
 });
 module.exports = con;
+
+const oneDay = 1000 * 60;
+
 app.use(
   session({
     secret: "webslesson",
-    resave: true,
-    saveUninitialized: true,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: oneDay },
   })
 );
 app.use(express.static(path.join(__dirname, "../public")));
@@ -48,7 +53,7 @@ app.use(express.json());
 //Define Routes
 app.use("/", require("../routes/pages"));
 app.use("/auth", require("../routes/auth"));
-// app.use("/apiRouter", require("../routes/apiRouter"));
+app.use("/apiRouter", require("../routes/apiRouter"));
 app.use(cors());
 // app.get("/meals", (req, res) => {
 //   res.render("meals");

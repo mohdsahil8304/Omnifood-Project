@@ -646,27 +646,27 @@ strong {
   color: #555;
 }
 
-.alert {
-  text-align: center;
-  background-color: #eb984e;
-  padding: 20px;
-  height: 7rem;
-  width: 50rem;
-  color: #fff;
-}
-.alert-denger {
-  font-size: 20px;
+  .alert {
+    text-align: center;
+    background-color: #eb984e;
+    padding: 20px;  
+    height: 7rem;
+    width: 50rem;
+    color: #fff;
+  }
+  .alert-denger {
+    font-size: 20px;
 
-}
+  }
 
-.mt-4 {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-top: 50px;
-  align-content: center;
-}
+  .mt-4 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-top: 50px;
+    align-content: center;
+  }
 
 
 /* Login Page Forget pass Link */

@@ -3,6 +3,7 @@
 const express = require("express");
 const router = express.Router();
 const con = require("../src/app");
+const auth = require("../routes/apiRouter");
 
 const authController = require("../controller/auth");
 // const { resetpassword } = require("../controller/auth");
@@ -19,17 +20,13 @@ const encoder = bodyParser.urlencoded();
 //   res.render("signUp");
 // });
 
-router.post("/signUp", encoder, authController.signUp);
-router.post("/logIn", encoder, authController.logIn);
-router.post("/forgetpassword", encoder, authController.forgetpassword);
-router.patch("/forgetpassword", encoder, authController.forgetpassword);
+router.post("/signUp", encoder, auth, authController.signUp);
+router.post("/logIn", auth, encoder, authController.logIn);
+router.post("/forgetpassword", auth, encoder, authController.forgetpassword);
+// router.patch("/forgetpassword", encoder, authController.forgetpassword);
 
-
-
-
-router.post("/resetpassword",encoder, authController.resetpassword);
-router.patch("/resetpassword", encoder, authController.resetpassword);
-router.delete("/resetpassword", encoder, authController.resetpassword);
-
+router.post("/resetpassword", encoder, auth, authController.resetpassword);
+// router.patch("/resetpassword", encoder, authController.resetpassword);
+// router.delete("/resetpassword", encoder, authController.resetpassword);
 
 module.exports = router;

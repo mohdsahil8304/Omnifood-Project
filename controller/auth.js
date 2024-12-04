@@ -1,7 +1,7 @@
 "use strict";
 
 const mysql = require("mysql2");
-// const jwt = require("jsonwebtoken");
+const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
@@ -10,9 +10,6 @@ const { hashSync, genSaltSync } = require("bcrypt");
 // const Op = Sequelize.Op;
 // const async = require("hbs/lib/async");
 const con = require("../src/app");
-
-// USER = "AKIAWUOUY7R3U4LJUMZR"
-// PASS = "userPassword""BARWYXMm3hHOQWlKH8gmRBx8cvI7xaUBpR76Y7yacdsy"
 
 // const { json } = require("express/lib/response");
 
@@ -88,9 +85,10 @@ exports.signUp = async (req, res) => {
     }
     // var result = JSON.stringify(result);
     let results = JSON.parse(JSON.stringify(result));
+    // console.log(results);
     results = results.find((item) => item);
-    console.log(">>>>>>>>>", result, email, [email]);
-    console.log(results.name);
+    // console.log(">>>>>>>>>", result, results, email, [email]);
+    // console.log(results.name);
     if (results.email === email && results.name === name) {
       console.log("user allready exist");
       return res.render("signUp", {
@@ -127,12 +125,19 @@ exports.logIn = (req, res) => {
       // var result = JSON.stringify(result);
       let results = JSON.parse(JSON.stringify(result));
       results = results.find((item) => item);
-      console.log(">>>>>>>>>", result, results, email, [email, password]);
-      console.log(results.password);
+      // console.log(">>>>>>>>>", result, results, email, [email, password]);
+      // console.log(results.password);
       let passCompare = await bcrypt.compare(password, results.password);
-      console.log(passCompare);
+      // console.log(passCompare);
       if (results.email === email && passCompare) {
-        console.log("user LogIn");
+        // console.log("user LogIn");
+        const token = jwt.sign({ user: email }, process.env.SECRET_KEY);
+        console.log(token);
+
+        res.cookie("token", token, {
+          expiresIn: "5m",
+          httpOnly: true,
+        });
         return res.render("indexLog");
       } else {
         return res.render("logIn", {
@@ -145,20 +150,21 @@ exports.logIn = (req, res) => {
 
 async function sendEmail({ to, subject, html, from = process.env.EMAIL_FROM }) {
   // const transporter = nodemailer.createTransport({
-  //   host: "smtp.ethereal.Email", 
-  //   port: 587, 
+  //   host: "smtp.ethereal.Email",
+  //   port: 587,
   //   secure: false,
   //   auth: {
   //     user: process.env.USER, // generated ethereal user
   //     pass: process.env.PASS, // generated ethereal password
   //   },
   // });
+  //
   const transporter = nodemailer.createTransport({
-    host: "email-smtp.ap-south-1.amazonaws.com",
-    port: "2587",
+    host: "smtp.ethereal.email",
+    port: 587,
     auth: {
-      user: "AKIAWUOUY7R3ZXAXFZTA",
-      pass: "BA2ib5n6Hrx8gJBAGXc00hrtJ3Wp1JeNoAfd/hbi2t+q",
+      user: "devin96@ethereal.email",
+      pass: "CphBej7CmCwE8Wd3Sm",
     },
   });
 
@@ -172,9 +178,8 @@ async function sendPasswordResetEmail(Email, tokenValue, origin) {
   if (origin) {
     const resetUrl = `${origin}/auth/resetpassword?token=${tokenValue}&Email=${Email}`;
     message = `<p>Please click the below link to reset your password, the link will be valid for 1 hour:</p>
-                         <p><a href="${resetUrl}">${resetUrl}</a></p>`; 
-// return resetUrl
-                                
+                              <p> <a href="${resetUrl}">${resetUrl}</a></p>`;
+    // return resetUrl
   } else {
     message = `<p>Please use the below token to reset your password with the <code>/auth/resetpassword</code> api route:</p><p><code>${tokenValue}</code></p>`;
   }
@@ -186,15 +191,12 @@ async function sendPasswordResetEmail(Email, tokenValue, origin) {
     html: `<h4>Reset Password </h4>
                      ${message}`,
   });
-} 
-
-
+}
 
 //  function fatchRestUrl(Email, tokenValue, origin){
 //   // origin = req.header("Origin");
- 
-// }
 
+// }
 
 // async function validateResetToken(Email,tokenValue,origin,currentTime,req) {
 //   // Email = req.body.email;
@@ -206,11 +208,11 @@ async function sendPasswordResetEmail(Email, tokenValue, origin) {
 //  let url = `${origin}/auth/resetpassword?token=${tokenValue}&Email=${Email}`;
 
 //  let params = (new URL(url)).searchParams;
-//  var tokenValue = params.get("token"); 
-//  console.log(tokenValue); 
+//  var tokenValue = params.get("token");
+//  console.log(tokenValue);
 //  var Email = params.get("Email");
 //  console.log(Email);
-// //  tokenValue = req.body.tokenValue; 
+// //  tokenValue = req.body.tokenValue;
 //   currentTime = new Date(Date.now());
 //   console.log(currentTime);
 //  if (!tokenValue || !Email) {
@@ -276,51 +278,46 @@ async function sendPasswordResetEmail(Email, tokenValue, origin) {
 //   let url = `${origin}/auth/resetpassword?token=${tokenValue}&Email=${Email}`;
 
 //  let params = (new URL(url)).searchParams;
-//  var tokenValue = params.get("token"); 
-//  console.log(tokenValue); 
+//  var tokenValue = params.get("token");
+//  console.log(tokenValue);
 //  var Email = params.get("Email");
 //  console.log(Email);
- 
+
 // })
 
-exports.resetpassword = async (req, res,next) => {
-  
+exports.resetpassword = async (req, res, next) => {
   // let url = await validateResetToken();
   // console.log(url);
   // await validateResetToken(Email, tokenValue, origin, currentTime);
   let email = req.query.Email;
   let tokenValue = req.query.token;
-  console.log(email,tokenValue);
-  // let { email, id } = req.params;
+  console.log(email, tokenValue);
+  // let { e mail, id } = req.params;
   // let { Email,used} = req.params;
-  // console.log(email,Email); 
+  // console.log(email,Email);
   // await validateResetToken(Email, tokenValue, origin, currentTime);
-  
+
   // let email = req.body.email;
   // console.log(Email);
   // let tokenValue = req.query.token
   // console.log(tokenValue);
- 
 
   const newPassword = req.body.newPassword;
-  const confirmPassword = req.body.confirmpassword
-  console.log(newPassword);
-  console.log(confirmPassword);
+  const confirmPassword = req.body.confirmpassword;
+  // console.log(newPassword);
+  // console.log(confirmPassword);
 
-  
-  
   if (!newPassword && !confirmPassword) {
-    return  res.render("resetpassword", {
-      message:
-        "Please Enter Password and Confirm Password",
+    return res.render("resetpassword", {
+      message: "Please Enter Password and Confirm Password",
     });
   }
 
-    const salt = genSaltSync(10);
-  const password = hashSync(newPassword, salt); 
-  const confirmpassword = hashSync(confirmPassword,salt)
-  console.log(password);
-  console.log(confirmpassword);
+  const salt = genSaltSync(10);
+  const password = hashSync(newPassword, salt);
+  const confirmpassword = hashSync(confirmPassword, salt);
+  // console.log(password);
+  // console.log(confirmpassword);
 
   // con.query(
   //   "SELECT * FROM user WHERE email = ?",
@@ -347,16 +344,14 @@ exports.resetpassword = async (req, res,next) => {
   // );
   // const user = getUserByEmail(email);
 
-
-  
   // await updateUserPassword(password, user.id);
 
-  if(password === confirmpassword){
+  if (password === confirmpassword) {
     con.query(
       "UPDATE user SET password= ?, confirmpassword = ? WHERE email = ?",
-      [password,confirmpassword,email],
-      (error, result) => {  
-        console.log(result,email,password,confirmpassword);
+      [password, confirmpassword, email],
+      (error, result) => {
+        console.log(result, email, password, confirmpassword);
         // let results = JSON.parse(JSON.stringify(result));
         // results = results.find((item) => item.email);
         // console.log(results,result);
@@ -364,56 +359,56 @@ exports.resetpassword = async (req, res,next) => {
           return console.log(error);
         } else {
           console.log(result);
-              res.render("logIn", {
+          console.log("Password reset successfully");
+          res.render("logIn", {
             message:
               "Password reset successful, you can now login with the new password",
           });
-          con.query("DELETE FROM resetpasswordtoken WHERE email = ?",[email],(error,result)=>{
-            console.log(result,email);
-            if(error){
-              return console.log(error);
-            }else{
-              console.log("Delete Successfully");
+          con.query(
+            "DELETE FROM resetpasswordtoken WHERE Email = ?",
+            [email],
+            (error, result) => {
+              console.log(result, email);
+              if (error) {
+                return console.log(error);
+              } else {
+                console.log("Delete Successfully");
+              }
             }
-          })
+          );
         }
       }
     );
-  }else{
+  } else {
     return res.render("resetpassword", {
-      message:
-        "Password do not match",
+      message: "Password do not match",
     });
   }
-
 };
 
 exports.forgetpassword = async (req, res) => {
   // const db = {};
-  const origin = req.header("Origin"); // we are  getting the request origin from  the HOST header
+  const origin = req.header("Origin"); // we are  getting the request origin from the HOST header
   console.log(origin);
-  let { resetId, tokenValue, createdAt, expiredAt, used, currentTime } = req.body;
+  let { resetId, tokenValue, createdAt, expiredAt, used, currentTime } =
+    req.body;
   let Email = req.body.email;
   tokenValue = crypto.randomBytes(40).toString("hex");
   console.log(tokenValue);
-  const resetTokenExpires = new Date(Date.now() + 60*60*1000);
+  const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000);
   console.log(resetTokenExpires);
-  let strExpTime = resetTokenExpires.toString();
+  let strExpTime = resetTokenExpires.getTime().toString();
   createdAt = new Date(Date.now());
-  let strCreatTime = createdAt.toString();
-  console.log(createdAt,strCreatTime);
+  let strCreatTime = createdAt.getTime().toString();
+  console.log(createdAt, strCreatTime);
 
   expiredAt = strExpTime;
-  console.log(expiredAt); 
+  console.log(expiredAt);
 
   // ***Requests to the User table ***
   const { name, email, password, confirmpassword, id } = req.body;
 
-
   /* UPDATE IF LINK IS USED CHANGE 0 TO 1  */
-
-  
-
 
   /* CHECK USER WHO ENTER HIS EMAIL FOR FORGETPASSWORD ARE BLONG FORM USER TABLE OR NOT */
   /* IF IT IS RELATED FROM USER TABLE SO INSERT IT IN RESETPASSWORD TABLE AND SEND RESET LINK ON HIS EMAIL */
@@ -427,8 +422,11 @@ exports.forgetpassword = async (req, res) => {
       console.log(">>>>>>>>>", result, results, email, [email]);
       if (error) {
         return console.log(error);
+        // return res.render("signUp",{
+        //   message: "Email is not exists,Please SignUp"
+        // })
       } else {
-        console.log(email !== undefined)
+        console.log(email !== undefined);
         if (results.email === email) {
           console.log("your email is valid");
           con.query(
@@ -452,26 +450,26 @@ exports.forgetpassword = async (req, res) => {
               }
             }
           );
-          con.query(
-            "SELECT * FROM resetpasswordtoken Where Email = ?",
-            [Email],
-            async (error, result) => {
-              let results = JSON.parse(JSON.stringify(result));
-              results = results.find((item) => item.Email);
-              console.log(">>>>>>>>>", result, results, Email, [Email]);
-              if (error) {
-                return console.log(error);
-              } else {
-                if (results.Email === Email) {
-                  console.log("your email already in resetpasswordtoken ");
-                  return res.render("forgetpassword", {
-                    message: "You already enterd this Email check your email",
-                  });
-                }
-              }
-            }
-            // console.log(results.email);
-          );
+          // con.query(
+          //   "SELECT * FROM resetpasswordtoken Where Email = ?",
+          //   [Email],
+          //   async (error, result) => {
+          //     let results = JSON.parse(JSON.stringify(result));
+          //     results = results.find((item) => item.Email);
+          //     console.log(">>>>>>>>>", result, results, Email, [Email]);
+          //     if (error) {
+          //       return console.log(error);
+          //     } else {
+          //       if (results.Email === Email) {
+          //         console.log("your email already in resetpasswordtoken ");
+          //         return res.render("forgetpassword", {
+          //           message: "You already enterd this Email check your email",
+          //         });
+          //       }
+          //     }
+          //   }
+          //   // console.log(results.email);
+          // );
         } else {
           // here we always return ok response to prevent email enumeration
           return res.render("forgetpassword", {
@@ -483,11 +481,9 @@ exports.forgetpassword = async (req, res) => {
     }
   );
 
-
-
   await sendPasswordResetEmail(Email, tokenValue, origin);
   // await validateResetToken(Email, tokenValue, origin, currentTime);
-  
+
   // res.render("forgetpassword", {
   //   message: "Please check your email for a new password",
   // });
@@ -527,8 +523,6 @@ exports.forgetpassword = async (req, res) => {
   // });
   // };
 
-  
-
   // con.query("DELETE FROM user WHERE id = ?", [id], (error) => {
   //   if (error) {
   //     return console.log(error);
@@ -537,9 +531,51 @@ exports.forgetpassword = async (req, res) => {
   //   }
   // });
   // };
-
 };
 
+// print factorial number
 
- 
+// let num = Number.parseInt(prompt("enter any number"));
+// console.log(num);
 
+// function factorial(num){
+
+//   let number = 1
+//  number = (num-1)*num
+//  return number;
+// }
+
+// factorial(num);
+
+// find min and max val
+
+// let val1 = Number.parseInt(prompt("enter first number"));
+// let val2 = Number.parseInt(prompt("enter second number"));
+
+// if(val1>val2){
+//   let max = val1;
+//   console.log("maxVal =",val1);
+//   let min = val2;
+//   console.log("minVal =",val2);
+
+// }else{
+//   let max = val1;
+//   console.log("maxVal =",val2);
+//   let min = val2;
+//   console.log("minVal =",val1);
+// }
+
+// let arr = [45,68,25,7,86,98];
+// let min = arr[0];
+// let max = arr[0];
+// function minMax(arr){
+//   for(let i = 0;i<= arr.length - 1;i++){
+//       if(max < arr[i]){
+//       max = arr[i];
+//      }else if(min > arr[i]){
+//       min = arr[i];
+//      }
+//     }
+//     return `${min} and ${max}`;
+// }
+// minMax(arr);
