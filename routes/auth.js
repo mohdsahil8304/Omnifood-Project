@@ -21,7 +21,7 @@ const encoder = bodyParser.urlencoded();
 // });
 
 router.post("/signUp", encoder, auth, authController.signUp);
-router.post("/logIn", auth, encoder, authController.logIn);
+router.post("/logIn", encoder, authController.logIn);
 router.post("/forgetpassword", auth, encoder, authController.forgetpassword);
 // router.patch("/forgetpassword", encoder, authController.forgetpassword);
 
