@@ -5,7 +5,9 @@ const hbs = require("hbs");
 const dotenv = require("dotenv");
 const cookie = require("cookie-parser");
 const port = process.env.PORT || 7000;
-const mysql = require("mysql2");
+// const mysql = require("mysql2");
+const mysql = require("mysql");
+
 
 const session = require("express-session");
 // const apiRouter = require("../routes/apiRouter");
