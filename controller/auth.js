@@ -28,6 +28,24 @@ const con = require("../src/app");
 // }
 // );
 
+// con.query(
+//   'CREATE TABLE User (' +
+//   'id INT NOT NULL AUTO_INCREMENT,' +
+//   'name VARCHAR(255) NOT NULL,' +
+//   'email VARCHAR(255) NOT NULL,' +
+//   'password VARCHAR(255) NOT NULL,' +
+//   'confirmPassword VARCHAR(255) NOT NULL,' +
+//   'created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,' +
+//   'PRIMARY KEY (id),' +
+//   'UNIQUE INDEX email_UNIQUE (email ASC)' +
+//   ')',
+//   function (err, result) {
+//     if (err) throw err;
+//     console.log("User table created");
+//   }
+// );
+
+
 exports.signUp = async (req, res) => {
   // console.log(req.body);
   //   const name = req.body.name;
@@ -160,11 +178,11 @@ async function sendEmail({ to, subject, html, from = process.env.EMAIL_FROM }) {
   // });
   //
   const transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
+    host: process.env.EMAIL_HOST,
+    port: process.env.EMAIL_PORT,
     auth: {
-      user: "devin96@ethereal.email",
-      pass: "CphBej7CmCwE8Wd3Sm",
+      user: process.env.USER,
+      pass: process.env.PASS,
     },
   });
 
@@ -292,7 +310,7 @@ exports.resetpassword = async (req, res, next) => {
   let email = req.query.Email;
   let tokenValue = req.query.token;
   console.log(email, tokenValue);
-  // let { e mail, id } = req.params;
+  // let { email, id } = req.params;
   // let { Email,used} = req.params;
   // console.log(email,Email);
   // await validateResetToken(Email, tokenValue, origin, currentTime);
