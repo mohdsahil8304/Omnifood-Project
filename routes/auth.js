@@ -6,7 +6,7 @@ const con = require("../src/app");
 const auth = require("../routes/apiRouter");
 
 const authController = require("../controller/auth");
-// const { resetpassword } = require("../controller/auth");
+const { resetpassword } = require("../controller/auth");
 
 // const authControllerdb = require("../controller/db");
 // const { hashSync, genSaltSync } = require("bcrypt");
