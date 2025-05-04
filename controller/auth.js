@@ -15,10 +15,10 @@ const con = require("../src/app");
 
 // con.query('CREATE TABLE ResetPasswordToken (' +
 // 'id INT NOT NULL AUTO_INCREMENT,' +
-// 'email VARCHAR(255) NOT NULL,' +
-// 'Token_value VARCHAR(350) NOT NULL,' +
-// 'created_at datetime  NOT NULL ,' +
-// 'expired_at datetime  NOT NULL,' +
+// 'Email VARCHAR(255) NOT NULL,' +
+// 'tokenValue VARCHAR(350) NOT NULL,' +
+// 'createdAt datetime  NOT NULL ,' +
+// 'expiredAt datetime  NOT NULL,' +
 // 'used INT(11) NOT NULL default "0",' +
 // 'inserted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,' +
 // 'PRIMARY KEY (id),' +
@@ -409,22 +409,26 @@ exports.forgetpassword = async (req, res) => {
   const origin = req.header("Origin"); // we are  getting the request origin from the HOST header
   console.log(origin);
   let { resetId, tokenValue, createdAt, expiredAt, used, currentTime } =
-    req.body;
+    req.body; 
   let Email = req.body.email;
+  console.log(Email);
   tokenValue = crypto.randomBytes(40).toString("hex");
   console.log(tokenValue);
   const resetTokenExpires = new Date(Date.now() + 60 * 60 * 1000);
   console.log(resetTokenExpires);
-  let strExpTime = resetTokenExpires.getTime().toString();
+  // let strExpTime = resetTokenExpires.getTime().toString();
+  let strExpTime =resetTokenExpires.toISOString().slice(0, 19).replace("T", " ");
+  console.log(strExpTime);
   createdAt = new Date(Date.now());
-  let strCreatTime = createdAt.getTime().toString();
+  // let strCreatTime = createdAt.getTime().toString();
+  let strCreatTime = createdAt.toISOString().slice(0, 19).replace("T", " ");
   console.log(createdAt, strCreatTime);
 
   expiredAt = strExpTime;
   console.log(expiredAt);
 
   // ***Requests to the User table ***
-  const { name, email, password, confirmpassword, id } = req.body;
+  const { name, email, password, confirmpassword,id } = req.body;
 
   /* UPDATE IF LINK IS USED CHANGE 0 TO 1  */
 
@@ -451,7 +455,7 @@ exports.forgetpassword = async (req, res) => {
             "INSERT INTO resetpasswordtoken SET ?",
             {
               resetId: resetId,
-              Email: Email,
+              Email: email,
               tokenValue: tokenValue,
               createdAt: strCreatTime,
               expiredAt: expiredAt,
