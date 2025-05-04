@@ -20,8 +20,8 @@ const encoder = bodyParser.urlencoded();
 //   res.render("signUp");
 // });
 
-router.post("/signUp", encoder, auth, authController.signUp);
-router.post("/logIn", encoder, auth,authController.logIn);
+router.post("/signUp",auth, encoder, authController.signUp);
+router.post("/logIn", encoder, authController.logIn);
 router.post("/forgetpassword", auth, encoder, authController.forgetpassword);
 // router.patch("/forgetpassword", encoder, authController.forgetpassword);
 
